@@ -31,13 +31,14 @@
       font-size: 15px;
       line-height: 1.6;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     /* ── NAV ── */
     nav {
       position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 40px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px 24px;
       background: rgba(10,10,12,0.88);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--border);
@@ -50,7 +51,7 @@
       text-decoration: none;
     }
     .nav-logo span { color: var(--text); }
-    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links { display: flex; gap: 28px; align-items: center; flex-wrap: nowrap; }
     .nav-links a {
       color: var(--muted);
       text-decoration: none;
@@ -72,6 +73,16 @@
     .nav-links .btn-contact:hover { opacity: .85; color: var(--bg); }
 
     /* ── HERO ── */
+    .hero-brand {
+      font-family: var(--font-disp);
+      font-size: clamp(42px, 10vw, 80px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 18px;
+    }
+    .hero-brand span { color: var(--text); }
     .hero {
       padding: 90px 40px 70px;
       max-width: 860px;
@@ -555,7 +566,11 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 680px) {
-      nav { padding: 14px 20px; }
+      nav { padding: 12px 16px; }
+      .nav-links { gap: 16px; }
+      .nav-links a { font-size: 11px; }
+      .btn-contact { padding: 7px 14px !important; font-size: 11px !important; }
+      .cart-nav-btn { width: 32px; height: 32px; }
       .hero { padding: 60px 20px 50px; }
       .filter-bar, .beat-grid { padding-left: 20px; padding-right: 20px; }
       #paginationBar { padding: 16px 20px 32px; }
@@ -852,7 +867,6 @@
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="#"><em>M4</em><span>Patron</span></a>
   <div class="nav-links">
     <a href="#beats">Beats</a>
     <a href="#pricing">Licensing</a>
@@ -866,8 +880,9 @@
 
 <!-- HERO -->
 <section class="hero" id="beats">
-  <p class="hero-eyebrow"> Producer - Beatmaker - Composer - M4Patron</p>
-			  <h1>Beats built for art.</em></h1>
+  <div class="hero-brand">M4<span>Patron</span></div>
+  <p class="hero-eyebrow">Producer · Beatmaker · Composer</p>
+  <h1>Beats built for art.</h1>
   <p>Premium instrumentals ready to license. Preview every track right here and find your sound.</p>
 </section>
 

@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>M4Patron — Beats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0c;
+      --surface:   #111116;
+      --border:    #1e1e28;
+      --accent:    #c8f03c;      /* white — the signature */
+      --accent2:   #7c5cfc;      /* deep violet for secondary highlights */
+      --text:      #e8e8f0;
+      --muted:     #5a5a70;
+      --font-disp: 'Space Mono', monospace;
+      --font-body: 'Space Grotesk', sans-serif;
+    }
+
+    /* Prevent iOS auto-zoom on input focus */
+    input, select, textarea, button { font-size: max(16px, 1em); }
+    input[type=range] { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 40px;
+      background: rgba(10,10,12,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--font-disp);
+      font-size: 18px;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links .btn-contact {
+      color: var(--bg);
+      background: var(--accent);
+      padding: 8px 20px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 12px;
+      transition: opacity .2s;
+    }
+    .nav-links .btn-contact:hover { opacity: .85; color: var(--bg); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 90px 40px 70px;
+      max-width: 860px;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-disp);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: var(--font-disp);
+      font-size: clamp(38px, 6vw, 72px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 460px;
+      line-height: 1.7;
+    }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      padding: 0 40px 28px;
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    }
+    .filter-bar span {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-right: 8px;
+    }
+    .filter-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 12px;
+      padding: 6px 16px;
+      border-radius: 2px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all .18s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+      font-weight: 600;
+    }
+
+    /* ── BEAT GRID ── */
+    .beat-grid {
+      padding: 0 40px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    /* ── BEAT ROW ── */
+    .beat-row {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 0 20px;
+      padding: 18px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: background .15s, border-color .15s;
+      cursor: default;
+    }
+    .beat-row:hover {
+      background: #14141a;
+      border-color: #2a2a38;
+    }
+    .beat-row.playing {
+      border-color: var(--accent);
+      background: #12131a;
+    }
+
+    /* play button */
+    .play-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all .18s;
+      flex-shrink: 0;
+    }
+    .play-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .beat-row.playing .play-btn {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .play-btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* beat info */
+    .beat-info { min-width: 0; }
+    .beat-title {
+      font-family: var(--font-disp);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    .beat-meta {
+      display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+    }
+    .beat-tag {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 2px;
+    }
+    .beat-tag.genre { color: #6060a0; border-color: #333348; }
+    .beat-bpm { font-size: 12px; color: var(--muted); font-family: var(--font-disp); }
+
+    /* waveform (fake, decorative) */
+    .waveform {
+      display: flex; align-items: center; gap: 2px;
+      height: 28px;
+      opacity: .35;
+    }
+    .beat-row.playing .waveform { opacity: 1; }
+    .waveform-bar {
+      width: 3px;
+      background: var(--accent);
+      border-radius: 1.5px;
+      transition: height .1s;
+    }
+    .beat-row:not(.playing) .waveform-bar { background: var(--muted); }
+
+    /* right side */
+    .beat-actions {
+      display: flex; align-items: center; gap: 20px;
+      flex-shrink: 0;
+    }
+    .beat-time {
+      font-family: var(--font-disp);
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 36px;
+      text-align: right;
+    }
+    .buy-btn {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 3px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all .18s;
+      white-space: nowrap;
+    }
+    .buy-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── WAVEFORM ANIMATION ── */
+    @keyframes waveAnim {
+      0%, 100% { height: 4px; }
+      50%       { height: 20px; }
+    }
+    .beat-row.playing .waveform-bar:nth-child(1)  { animation: waveAnim 0.7s infinite 0.00s; }
+    .beat-row.playing .waveform-bar:nth-child(2)  { animation: waveAnim 0.7s infinite 0.07s; }
+    .beat-row.playing .waveform-bar:nth-child(3)  { animation: waveAnim 0.7s infinite 0.14s; }
+    .beat-row.playing .waveform-bar:nth-child(4)  { animation: waveAnim 0.7s infinite 0.21s; }
+    .beat-row.playing .waveform-bar:nth-child(5)  { animation: waveAnim 0.7s infinite 0.28s; }
+    .beat-row.playing .waveform-bar:nth-child(6)  { animation: waveAnim 0.7s infinite 0.35s; }
+    .beat-row.playing .waveform-bar:nth-child(7)  { animation: waveAnim 0.7s infinite 0.42s; }
+    .beat-row.playing .waveform-bar:nth-child(8)  { animation: waveAnim 0.7s infinite 0.49s; }
+    .beat-row.playing .waveform-bar:nth-child(9)  { animation: waveAnim 0.7s infinite 0.56s; }
+    .beat-row.playing .waveform-bar:nth-child(10) { animation: waveAnim 0.7s infinite 0.63s; }
+    .beat-row.playing .waveform-bar:nth-child(11) { animation: waveAnim 0.7s infinite 0.21s; }
+    .beat-row.playing .waveform-bar:nth-child(12) { animation: waveAnim 0.7s infinite 0.08s; }
+    .beat-row.playing .waveform-bar:nth-child(13) { animation: waveAnim 0.7s infinite 0.44s; }
+    .beat-row.playing .waveform-bar:nth-child(14) { animation: waveAnim 0.7s infinite 0.17s; }
+    .beat-row.playing .waveform-bar:nth-child(15) { animation: waveAnim 0.7s infinite 0.60s; }
+
+    /* ── STICKY PLAYER BAR ── */
+    #player-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #0e0e14;
+      border-top: 1px solid var(--border);
+      padding: 14px 40px;
+      display: none;
+      align-items: center;
+      gap: 24px;
+      z-index: 200;
+    }
+    #player-bar.visible { display: flex; }
+
+    .player-title {
+      font-family: var(--font-disp);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      min-width: 160px;
+    }
+    .player-title small {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .player-controls { display: flex; align-items: center; gap: 14px; }
+    .ctrl-btn {
+      background: none; border: none;
+      color: var(--muted); cursor: pointer;
+      display: flex; align-items: center;
+      transition: color .15s;
+      padding: 4px;
+    }
+    .ctrl-btn:hover { color: var(--text); }
+    .ctrl-btn.play-main {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .ctrl-btn.play-main:hover { opacity: .85; color: var(--bg); }
+    .ctrl-btn svg { width: 18px; height: 18px; fill: currentColor; }
+    .ctrl-btn.play-main svg { width: 14px; height: 14px; }
+
+    .player-progress { flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .player-time {
+      font-family: var(--font-disp);
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 38px;
+    }
+    input[type=range].progress-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range].progress-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+    input[type=range].volume-slider {
+      -webkit-appearance: none;
+      width: 80px; height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range].volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--text);
+      cursor: pointer;
+    }
+    .volume-wrap { display: flex; align-items: center; gap: 8px; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.75);
+      z-index: 300;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 36px 32px;
+      width: min(520px, 92vw);
+    }
+    .modal h2 {
+      font-family: var(--font-disp);
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .modal-beat-name {
+      font-size: 12px;
+      color: var(--accent);
+      font-family: var(--font-disp);
+      letter-spacing: 0.06em;
+      margin-bottom: 28px;
+    }
+    .license-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .license-card {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      padding: 18px 16px;
+      cursor: pointer;
+      transition: border-color .18s;
+    }
+    .license-card:hover { border-color: var(--accent2); }
+    .license-card.selected { border-color: var(--accent); }
+    .license-name {
+      font-family: var(--font-disp);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .license-price {
+      font-family: var(--font-disp);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .license-features { list-style: none; }
+    .license-features li {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 2px 0;
+      padding-left: 14px;
+      position: relative;
+    }
+    .license-features li::before {
+      content: '—';
+      position: absolute; left: 0;
+      color: var(--accent);
+      font-size: 10px;
+    }
+    .modal-footer {
+      margin-top: 24px;
+      display: flex; gap: 12px; justify-content: flex-end; align-items: center;
+    }
+    .modal-close {
+      background: none; border: none;
+      color: var(--muted); cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 13px;
+      padding: 10px 16px;
+      transition: color .15s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .btn-checkout {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 12px 28px;
+      border-radius: 3px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: opacity .18s;
+    }
+    .btn-checkout:hover { opacity: .85; }
+    .cart-confirm-icon { font-size: 40px; text-align: center; margin-bottom: 12px; }
+    .modal #modalStep2 h2 { text-align: center; margin-bottom: 8px; }
+    .cart-confirm-detail {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      font-family: var(--font-disp);
+      letter-spacing: 0.04em;
+      margin-bottom: 28px;
+      line-height: 1.8;
+    }
+    .btn-keep-shopping {
+      border: 1.5px solid var(--border) !important;
+      border-radius: 3px;
+      padding: 12px 20px !important;
+      font-size: 13px !important;
+      color: var(--muted) !important;
+    }
+    .btn-keep-shopping:hover { color: var(--text) !important; border-color: var(--muted) !important; }
+
+    /* ── PRICING SECTION ── */
+    .pricing-section {
+      padding: 80px 40px;
+      border-top: 1px solid var(--border);
+    }
+    .section-label {
+      font-family: var(--font-disp);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .pricing-section h2 {
+      font-family: var(--font-disp);
+      font-size: 28px;
+      margin-bottom: 40px;
+    }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 28px 22px;
+    }
+    .pricing-card.featured { border-color: var(--accent); }
+    .pricing-card .tier { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; font-family: var(--font-disp); }
+    .pricing-card .amount { font-family: var(--font-disp); font-size: 32px; font-weight: 700; margin-bottom: 16px; }
+    .pricing-card.featured .amount { color: var(--accent); }
+    .pricing-card ul { list-style: none; }
+    .pricing-card ul li { font-size: 12px; color: var(--muted); padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .pricing-card ul li:last-child { border-bottom: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 40px 40px 32px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 20px; flex-wrap: wrap;
+    }
+    footer .logo-f {
+      font-family: var(--font-disp);
+      font-size: 14px;
+      color: var(--accent);
+    }
+    footer p { font-size: 12px; color: var(--muted); }
+
+    /* padding bottom for sticky player */
+    .page-pad { height: 80px; }
+
+    /* ── PAGINATION ── */
+    .pg-btn {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 3px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all .18s;
+    }
+    .pg-btn:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .pg-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      nav { padding: 14px 20px; }
+      .hero { padding: 60px 20px 50px; }
+      .filter-bar, .beat-grid { padding-left: 20px; padding-right: 20px; }
+      #paginationBar { padding: 16px 20px 32px; }
+      .beat-title { white-space: normal; overflow: visible; text-overflow: unset; }
+      .pricing-section { padding: 60px 20px; }
+      footer { padding: 30px 20px; flex-direction: column; align-items: flex-start; }
+      .beat-actions { gap: 10px; }
+      .waveform { display: none; }
+      #player-bar { padding: 12px 16px; gap: 12px; }
+      .volume-wrap { display: none; }
+      /* Modal: slide up from bottom, scrollable, sticky footer */
+      .modal-overlay { align-items: flex-end; }
+      .modal {
+        max-height: 88vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px 12px 0 0;
+        padding: 24px 18px 0;
+        width: 100vw;
+      }
+      .license-options { grid-template-columns: 1fr; gap: 10px; }
+      .license-card { padding: 14px 14px; }
+      .license-price { font-size: 18px; }
+      .modal-footer {
+        position: sticky;
+        bottom: 0;
+        background: var(--surface);
+        padding: 14px 0 20px;
+        margin-top: 8px;
+        display: flex;
+        gap: 10px;
+        flex-direction: column-reverse;
+      }
+      .btn-checkout, .modal-close {
+        width: 100%;
+        text-align: center;
+        padding: 14px 20px;
+        font-size: 14px;
+      }
+      .modal-close { padding: 12px 20px; }
+      /* YT modal full-width on mobile */
+      .yt-modal { width: 100vw; border-radius: 0; border-left: none; border-right: none; }
+    }
+
+    .play-btn-placeholder { width: 40px; height: 40px; flex-shrink: 0; }
+
+    /* ── YOUTUBE PREVIEW MODAL ── */
+    .yt-modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.82);
+      z-index: 400;
+      align-items: center; justify-content: center;
+    }
+    .yt-modal-overlay.open { display: flex; }
+    .yt-modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: min(720px, 94vw);
+      overflow: hidden;
+    }
+    .yt-modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .yt-modal-title {
+      font-family: var(--font-disp);
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+    }
+    .yt-modal-close {
+      background: none; border: none;
+      color: var(--muted); cursor: pointer;
+      font-size: 16px; line-height: 1;
+      padding: 4px 6px;
+      transition: color .15s;
+    }
+    .yt-modal-close:hover { color: var(--text); }
+    .yt-embed-wrap {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+    }
+    .yt-embed-wrap iframe {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* ── PREVIEW BUTTON ── */
+    .preview-yt-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 3px;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: all .18s;
+      white-space: nowrap;
+    }
+    .preview-yt-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── CART NAV BTN ── */
+    .cart-nav-btn {
+      position: relative;
+      background: none;
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .cart-nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .cart-count {
+      position: absolute;
+      top: -6px; right: -6px;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: var(--font-disp);
+      font-size: 10px;
+      font-weight: 700;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── CART DRAWER ── */
+    .cart-drawer-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.55);
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s;
+    }
+    .cart-drawer-overlay.open { opacity: 1; pointer-events: all; }
+    .cart-drawer {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+      width: min(380px, 92vw);
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .28s cubic-bezier(.4,0,.2,1);
+    }
+    .cart-drawer-overlay.open .cart-drawer { transform: translateX(0); }
+    .cart-drawer-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-drawer-header h3 {
+      font-family: var(--font-disp);
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .cart-drawer-close {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 20px; line-height: 1;
+      transition: color .15s;
+    }
+    .cart-drawer-close:hover { color: var(--text); }
+    .cart-items { flex: 1; overflow-y: auto; padding: 16px 24px; }
+    .cart-empty {
+      text-align: center; color: var(--muted);
+      font-size: 13px; margin-top: 60px;
+      line-height: 1.8;
+    }
+    .cart-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-title {
+      font-family: var(--font-disp);
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+    .cart-item-license { font-size: 11px; color: var(--muted); }
+    .cart-item-price {
+      font-family: var(--font-disp);
+      font-size: 14px; font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .cart-item-remove {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 16px; line-height: 1;
+      transition: color .15s; flex-shrink: 0;
+    }
+    .cart-item-remove:hover { color: #ff5555; }
+    .cart-drawer-footer {
+      padding: 20px 24px;
+      border-top: 1px solid var(--border);
+    }
+    .cart-total {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+      font-family: var(--font-disp);
+      font-size: 13px;
+    }
+    .cart-total-amount { font-size: 20px; font-weight: 700; color: var(--accent); }
+    .btn-cart-checkout {
+      width: 100%;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 14px;
+      border-radius: 3px;
+      font-family: var(--font-body);
+      font-size: 13px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.04em;
+      transition: opacity .18s;
+    }
+    .btn-cart-checkout:hover { opacity: .85; }
+  
+    /* ── CONTACT MODAL ── */
+    .contact-modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.75);
+      z-index: 300;
+      align-items: center; justify-content: center;
+    }
+    .contact-modal-overlay.open { display: flex; }
+    .contact-modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 44px 36px;
+      width: min(440px, 92vw);
+      text-align: center;
+      position: relative;
+    }
+    .contact-modal-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    .contact-modal h2 {
+      font-family: var(--font-disp);
+      font-size: 16px;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+    .contact-modal p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .contact-email-link {
+      display: inline-block;
+      font-family: var(--font-disp);
+      font-size: 14px;
+      color: var(--accent);
+      text-decoration: none;
+      border: 1.5px solid var(--accent);
+      padding: 12px 28px;
+      border-radius: 3px;
+      letter-spacing: 0.04em;
+      transition: background .18s, color .18s;
+      margin-bottom: 20px;
+    }
+    .contact-email-link:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .contact-modal-close {
+      position: absolute;
+      top: 14px; right: 18px;
+      background: none; border: none;
+      color: var(--muted); font-size: 18px;
+      cursor: pointer; transition: color .15s;
+    }
+    .contact-modal-close:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#"><em>M4</em><span>Patron</span></a>
+  <div class="nav-links">
+    <a href="#beats">Beats</a>
+    <a href="#pricing">Licensing</a>
+    <a href="#" class="btn-contact" onclick="openContactModal(); return false;">Contact</a>
+    <button class="cart-nav-btn" id="cartNavBtn" onclick="openCartDrawer()" title="View Cart">
+      <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.9 18 9 18h12v-2H9.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.43 5H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+      <span class="cart-count" id="cartCount" style="display:none">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="beats">
+  <p class="hero-eyebrow"> Producer - Beatmaker - Composer - M4Patron</p>
+			  <h1>Beats built for art.</em></h1>
+  <p>Premium instrumentals ready to license. Preview every track right here and find your sound.</p>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar">
+  <span>Filter:</span>
+  <button class="filter-btn active" data-genre="all">All</button>
+  <button class="filter-btn" data-genre="Trap">Trap</button>
+  <button class="filter-btn" data-genre="Melodic Trap">Melodic Trap</button>
+  <button class="filter-btn" data-genre="Drill">Drill</button>
+  <button class="filter-btn" data-genre="Underground">Underground</button>
+</div>
+
+<!-- BEAT GRID -->
+<div class="beat-grid" id="beatGrid"></div>
+
+<!-- PAGINATION -->
+<div id="paginationBar" style="display:none; align-items:center; justify-content:center; gap:16px; padding:20px 40px 40px;">
+  <button id="pgPrev" onclick="goPrevPage()" class="pg-btn">← Prev</button>
+  <span id="pgInfo" style="font-family:var(--font-disp);font-size:12px;color:var(--muted);letter-spacing:0.08em;min-width:40px;text-align:center;"></span>
+  <button id="pgNext" onclick="goNextPage()" class="pg-btn">Next →</button>
+</div>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <p class="section-label">License tiers</p>
+  <h2>Simple pricing.<br>Every beat.</h2>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="tier">Basic Lease</div>
+      <div class="amount">$15</div>
+      <ul>
+        <li>MP3 file</li>
+        <li>50k streams</li>
+        <li>2,500 copies</li>
+        <li>Non-exclusive</li>
+        <li>Must credit M4Patron</li>
+      </ul>
+    </div>
+    <div class="pricing-card">
+      <div class="tier">Premium Lease</div>
+      <div class="amount">$30</div>
+      <ul>
+        <li>MP3 + WAV files</li>
+        <li>150k streams</li>
+        <li>5,000 copies</li>
+        <li>Non-exclusive</li>
+        <li>Must credit M4Patron</li>
+      </ul>
+    </div>
+    <div class="pricing-card">
+      <div class="tier">Unlimited Lease</div>
+      <div class="amount">$60</div>
+      <ul>
+        <li>MP3 + WAV + Stems</li>
+        <li>Unlimited streams</li>
+        <li>Unlimited copies</li>
+        <li>Non-exclusive</li>
+        <li>Must credit M4Patron</li>
+      </ul>
+    </div>
+    <div class="pricing-card">
+      <div class="tier">Exclusive Rights</div>
+      <div class="amount">$100</div>
+      <ul>
+        <li>MP3 + WAV + Stems</li>
+        <li>Unlimited everything</li>
+        <li>Full exclusive rights</li>
+        <li>Beat removed from store</li>
+        <li>No credit required</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div style="padding: 20px 40px; border-top: 1px solid var(--border); text-align:center;">
+  <p style="font-size:11px; color:var(--muted); line-height:1.8; max-width:560px; margin:0 auto;">
+    <span style="color:var(--accent); margin-right:6px;">ℹ</span>
+    Beats are delivered manually to your email within 24 hours of purchase. Automatic delivery is on the way — we appreciate your patience.
+  </p>
+</div>
+<footer>
+  <div class="logo-f">M4Patron</div>
+  <p>© 2026 M4Patron. All beats produced by M4Patron. All rights reserved.</p>
+</footer>
+
+<div class="page-pad"></div>
+
+<!-- STICKY PLAYER BAR -->
+<div id="player-bar">
+  <div class="player-title">
+    <span id="player-name">—</span>
+    <small>M4Patron</small>
+  </div>
+  <div class="player-controls">
+    <button class="ctrl-btn" id="prevBtn" title="Previous">
+      <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+    </button>
+    <button class="ctrl-btn play-main" id="playPauseBtn" title="Play/Pause">
+      <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+    <button class="ctrl-btn" id="nextBtn" title="Next">
+      <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+    </button>
+  </div>
+  <div class="player-progress">
+    <span class="player-time" id="currentTime">0:00</span>
+    <input type="range" class="progress-slider" id="progressSlider" min="0" max="100" value="0" />
+    <span class="player-time" id="totalTime">0:00</span>
+  </div>
+  <div class="volume-wrap">
+    <svg style="width:16px;height:16px;fill:var(--muted)" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.02" value="0.8" />
+  </div>
+</div>
+
+<!-- LICENSE MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <!-- STEP 1: Choose license -->
+    <div id="modalStep1">
+      <h2>Choose a License</h2>
+      <div class="modal-beat-name" id="modalBeatName"></div>
+      <div class="license-options" id="licenseOptions"></div>
+      <div style="margin-top:20px; padding:12px 14px; border:1px solid var(--border); border-radius:3px; display:flex; align-items:flex-start; gap:10px;">
+        <span style="color:var(--accent); font-size:14px; flex-shrink:0;">ℹ</span>
+        <p style="font-size:11px; color:var(--muted); line-height:1.6; margin:0;">Beats are delivered manually to your email within 24 hours of purchase. Automatic delivery is coming soon — thank you for your patience.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-close" id="modalClose">← Continue Shopping</button>
+        <button class="btn-checkout" id="addToCartBtn">Add to Cart →</button>
+      </div>
+    </div>
+    <!-- STEP 2: Cart confirmation -->
+    <div id="modalStep2" style="display:none;">
+      <div class="cart-confirm-icon">🛒</div>
+      <h2>Added to Cart</h2>
+      <div class="cart-confirm-detail" id="cartConfirmDetail"></div>
+      <div class="modal-footer" style="justify-content:center; gap:16px; flex-wrap:wrap;">
+        <button class="modal-close btn-keep-shopping" id="keepShoppingBtn">← Continue Shopping</button>
+        <button class="btn-checkout" id="checkoutBtn">Checkout →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- YOUTUBE PREVIEW MODAL -->
+<div class="yt-modal-overlay" id="ytModalOverlay" onclick="closeYTPreview(event)">
+  <div class="yt-modal">
+    <div class="yt-modal-header">
+      <span class="yt-modal-title" id="ytModalTitle"></span>
+      <button class="yt-modal-close" onclick="closeYTPreview()">✕</button>
+    </div>
+    <div class="yt-embed-wrap">
+      <iframe id="ytFrame" src="" frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT MODAL -->
+<div class="contact-modal-overlay" id="contactModalOverlay">
+  <div class="contact-modal">
+    <button class="contact-modal-close" onclick="closeContactModal()">✕</button>
+    <div class="contact-modal-icon">🎧</div>
+    <h2>GET IN TOUCH</h2>
+    <p>For licensing inquiries, custom beats, or any questions —<br>reach out directly and I'll respond as soon as possible.</p>
+    <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:20px;">
+      <span style="font-family:var(--font-disp); font-size:14px; color:var(--accent); letter-spacing:0.04em;">m4patron10500@gmail.com</span>
+      <button onclick="copyEmail()" id="copyEmailBtn" style="background:var(--accent); color:var(--bg); border:none; border-radius:3px; padding:8px 14px; font-family:var(--font-body); font-size:12px; font-weight:700; cursor:pointer; transition:opacity .18s; white-space:nowrap;">Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer-overlay" id="cartDrawerOverlay" onclick="closeCartDrawer(e)">
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <h3>Your Cart</h3>
+      <button class="cart-drawer-close" onclick="closeCartDrawer()">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-drawer-footer" id="cartFooter" style="display:none">
+      <div class="cart-total">
+        <span>Total</span>
+        <span class="cart-total-amount" id="cartTotal">$0</span>
+      </div>
+      <label id="deliveryAckLabel" style="display:flex; align-items:flex-start; gap:10px; margin-bottom:14px; padding:12px; border:1px solid var(--border); border-radius:3px; cursor:pointer; transition:border-color .18s;">
+        <input type="checkbox" id="deliveryAckCheck" onchange="updateCheckoutBtn()" style="margin-top:2px; accent-color:var(--accent); width:14px; height:14px; flex-shrink:0; cursor:pointer;" />
+        <span style="font-size:10px; color:var(--muted); line-height:1.6;">I acknowledge that beats are delivered manually to my email within 24 hours of purchase. Automatic delivery is coming soon — I understand and agree to this process.</span>
+      </label>
+      <button class="btn-cart-checkout" id="checkoutActionBtn" onclick="cartCheckout()" disabled style="opacity:0.45; cursor:not-allowed;">Proceed to Checkout →</button>
+    </div>
+  </div>
+</div>
+
+
+<audio id="audioEl"></audio>
+
+<script>
+  // ── BEAT DATA ──
+  // Replace `src` values with real audio file URLs when ready.
+  // Fake durations used; real duration loads from audio metadata.
+    const beats = [
+    { id:1, title:"Dragon Tattoo", genre:"Melodic Trap", bpm:140, key:"B Min", duration:"2:54", yt:"mtVR7gKDIhE" },
+    { id:2, title:"Valhalla", genre:"Melodic Trap", bpm:140, key:"B Min", duration:"3:05", yt:"1VZ31AcqtRA" },
+    { id:3, title:"Pski", genre:"Underground", bpm:130, key:"A# Min", duration:"2:55", yt:"G53g-ZXsG7o" },
+    { id:4, title:"Emeralds", genre:"Melodic Trap", bpm:140, key:"C Maj", duration:"2:44" },
+    { id:6, title:"If Not Now Then When", genre:"Melodic Trap", bpm:150, key:"A Min", duration:"3:07", yt:"nyY9voL28b0" },
+    { id:7, title:"Esco", genre:"Trap", bpm:160, key:"A# Min", duration:"3:27", yt:"GmY-ysmYB_8" },
+    { id:8, title:"Tree Of Life", genre:"Melodic Trap", bpm:148, key:"A# Min", duration:"3:05", yt:"pFe8gOkHOTM" },
+    { id:9, title:"Spyder", genre:"Drill", bpm:134, key:"A# Min", duration:"2:50", yt:"_pmojFJAT3o" }
+,
+  { id:10, title:"Echoes", genre:"Melodic Trap", bpm:150, key:"A# Min", duration:"0:00" },
+  { id:11, title:"Sparrow", genre:"Trap", bpm:160, key:"A# Min", duration:"0:00", yt:"B3q6FFsQQxw" },
+  { id:12, title:"The South", genre:"Trap", bpm:155, key:"A# Min", duration:"0:00", yt:"r_a_EUEMZDM" },
+  { id:13, title:"100K", genre:"Melodic Trap", bpm:155, key:"A Min", duration:"0:00", yt:"pZWRg00TfjI" },
+  { id:14, title:"Bones", genre:"Melodic Trap", bpm:119, key:"A# Min", duration:"0:00", yt:"XIUzmG5he7Q" },
+  { id:15, title:"-14 Degrees", genre:"Melodic Trap", bpm:160, key:"A# Min", duration:"0:00", yt:"W-06UyKZAJE" },
+  { id:16, title:"Halo", genre:"Melodic Trap", bpm:154, key:"A Min", duration:"0:00", yt:"_S01kcPBoXM" }
+  ];
+
+  const licenses = [
+    { id:"basic",     name:"Basic Lease",     price:"$15",  features:["MP3","50k streams","2,500 copies","Non-exclusive"] },
+    { id:"premium",   name:"Premium Lease",   price:"$30",  features:["MP3 + WAV","150k streams","5,000 copies","Non-exclusive"] },
+    { id:"unlimited", name:"Unlimited Lease", price:"$60",  features:["MP3 + WAV + Stems","Unlimited streams","Non-exclusive"] },
+    { id:"exclusive", name:"Exclusive Rights",price:"$100", features:["MP3 + WAV + Stems","Unlimited","Full exclusive rights"] },
+  ];
+
+  // ── STATE ──
+  let currentIndex = -1;
+  let isPlaying    = false;
+  let activeFilter = "all";
+  let selectedLicense = null;
+  let currentBeatForModal = null;
+
+  const audioEl       = document.getElementById("audioEl");
+  const playerBar     = document.getElementById("player-bar");
+  const playerName    = document.getElementById("player-name");
+  const playPauseBtn  = document.getElementById("playPauseBtn");
+  const playIcon      = document.getElementById("playIcon");
+  const pauseIcon     = document.getElementById("pauseIcon");
+  const progressSlider= document.getElementById("progressSlider");
+  const currentTimeEl = document.getElementById("currentTime");
+  const totalTimeEl   = document.getElementById("totalTime");
+  const volumeSlider  = document.getElementById("volumeSlider");
+
+  // ── RENDER GRID (paginated — 5 beats per page) ──
+  const PAGE_SIZE = 5;
+  let currentPage = 0;
+
+  function buildBeatRow(b, i, filter) {
+    const isActive = currentIndex === i && filter === activeFilter;
+    const playing  = isActive && isPlaying;
+    return `<div class="beat-row ${isActive ? 'playing' : ''}" id="row-${b.id}" data-id="${b.id}" data-index="${i}">
+        <button class="play-btn" onclick="${b.yt ? `openYTPreview('${b.yt}','${b.title}')` : `toggleBeat(${b.id}, ${i})`}" title="Preview">
+          ${playing
+            ? `<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`
+            : `<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`}
+        </button>
+        <div class="beat-info">
+          <div class="beat-title">${b.title}</div>
+          <div class="beat-meta">
+            <span class="beat-tag genre">${b.genre}</span>
+            <span class="beat-bpm">${b.bpm} BPM · ${b.key}</span>
+            <div class="waveform">
+              ${Array.from({length:15}, (_,j) => `<div class="waveform-bar" style="height:${4 + Math.abs(Math.sin(j*0.8+b.id)*16)}px"></div>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="beat-actions">
+          <span class="beat-time">${b.duration}</span>
+          <button class="buy-btn" onclick="openModal(${b.id})" title="Add to Cart"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:currentColor;vertical-align:middle;margin-right:5px"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.9 18 9 18h12v-2H9.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.43 5H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>Add to Cart</button>
+        </div>
+      </div>`;
+  }
+
+
+  function renderGrid(filter) {
+    const grid = document.getElementById("beatGrid");
+    const list = filter === "all" ? beats : beats.filter(b => b.genre === filter);
+    const totalPages = Math.ceil(list.length / PAGE_SIZE);
+    if (currentPage >= totalPages) currentPage = 0;
+
+    const start = currentPage * PAGE_SIZE;
+    const page  = list.slice(start, start + PAGE_SIZE);
+    grid.innerHTML = page.map((b, i) => buildBeatRow(b, start + i, filter)).join('');
+
+    // Update pagination controls
+    const prevBtn = document.getElementById('pgPrev');
+    const nextBtn = document.getElementById('pgNext');
+    const pgInfo  = document.getElementById('pgInfo');
+    const pgBar   = document.getElementById('paginationBar');
+    if (prevBtn) prevBtn.disabled = currentPage === 0;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages - 1;
+    if (pgInfo)  pgInfo.textContent = totalPages > 1 ? `${currentPage + 1} / ${totalPages}` : '';
+    if (pgBar)   pgBar.style.display = list.length > PAGE_SIZE ? 'flex' : 'none';
+  }
+
+  // ── FILTER ──
+  document.getElementById("filterBar").addEventListener("click", e => {
+    const btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.genre;
+    currentIndex = -1;
+    currentPage = 0;
+    isPlaying = false;
+    audioEl.pause();
+    updatePlayerUI();
+    renderGrid(activeFilter);
+  });
+
+  // ── PLAY / PAUSE ──
+  let previewTimer = null;
+
+  function toggleBeat(id, index) {
+    const beat = beats.find(b => b.id === id);
+    if (!beat) return;
+
+    if (currentIndex === index) {
+      if (isPlaying) {
+        // Pause
+        audioEl.pause();
+        isPlaying = false;
+        clearTimeout(previewTimer);
+      } else {
+        // Resume — but always restart from beginning of preview
+        audioEl.currentTime = 0;
+        audioEl.play().catch(()=>{});
+        isPlaying = true;
+        startPreviewTimer();
+      }
+    } else {
+      clearTimeout(previewTimer);
+      currentIndex = index;
+      isPlaying = true;
+      audioEl.src = "";
+      playerName.textContent = beat.title;
+      playerBar.classList.add("visible");
+    }
+    updatePlayerUI();
+    renderGrid(activeFilter);
+  }
+
+  function startPreviewTimer() {
+    clearTimeout(previewTimer);
+    previewTimer = setTimeout(() => {
+      fadeOutAndStop();
+    }, 40000);
+  }
+
+  function fadeOutAndStop() {
+    const fadeDuration = 8000;
+    const steps = 60;
+    const interval = fadeDuration / steps;
+    const startVol = audioEl.volume;
+    let step = 0;
+    const fade = setInterval(() => {
+      step++;
+      audioEl.volume = Math.max(0, startVol * (1 - step / steps));
+      if (step >= steps) {
+        clearInterval(fade);
+        audioEl.pause();
+        audioEl.currentTime = 0; // reset to start so next play = fresh preview
+        audioEl.volume = parseFloat(volumeSlider.value);
+        isPlaying = false;
+        updatePlayerUI();
+        renderGrid(activeFilter);
+      }
+    }, interval);
+  }
+
+  function updatePlayerUI() {
+    playIcon.style.display  = isPlaying ? "none"  : "block";
+    pauseIcon.style.display = isPlaying ? "block" : "none";
+  }
+
+  // ── PLAYER CONTROLS ──
+  playPauseBtn.addEventListener("click", () => {
+    if (currentIndex < 0) return;
+    if (isPlaying) { audioEl.pause(); isPlaying = false; clearTimeout(previewTimer); }
+    else           { audioEl.play();  isPlaying = true;  startPreviewTimer(); }
+    updatePlayerUI();
+    renderGrid(activeFilter);
+  });
+
+  document.getElementById("prevBtn").addEventListener("click", () => {
+    const list = activeFilter === "all" ? beats : beats.filter(b => b.genre === activeFilter);
+    const ni = (currentIndex - 1 + list.length) % list.length;
+    toggleBeat(list[ni].id, ni);
+  });
+  document.getElementById("nextBtn").addEventListener("click", () => {
+    const list = activeFilter === "all" ? beats : beats.filter(b => b.genre === activeFilter);
+    const ni = (currentIndex + 1) % list.length;
+    toggleBeat(list[ni].id, ni);
+  });
+
+  audioEl.addEventListener("timeupdate", () => {
+    const pct = audioEl.duration ? (audioEl.currentTime / audioEl.duration) * 100 : 0;
+    progressSlider.value = pct;
+    currentTimeEl.textContent = fmt(audioEl.currentTime);
+    totalTimeEl.textContent   = fmt(audioEl.duration || 0);
+  });
+  audioEl.addEventListener("ended", () => {
+    const list = activeFilter === "all" ? beats : beats.filter(b => b.genre === activeFilter);
+    const ni = (currentIndex + 1) % list.length;
+    toggleBeat(list[ni].id, ni);
+  });
+  progressSlider.addEventListener("input", () => {
+    if (audioEl.duration) { audioEl.currentTime = (progressSlider.value / 100) * audioEl.duration; if (isPlaying) startPreviewTimer(); }
+  });
+  volumeSlider.addEventListener("input", () => { audioEl.volume = volumeSlider.value; });
+  audioEl.volume = 0.8;
+
+  function fmt(s) {
+    if (isNaN(s)) return "0:00";
+    const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2,"0")}`;
+  }
+
+  // ── LICENSE MODAL ──
+  let cart = [];
+
+  function openModal(id) {
+    currentBeatForModal = beats.find(b => b.id === id);
+    if (!currentBeatForModal) return;
+    selectedLicense = null;
+    document.getElementById("modalBeatName").textContent = currentBeatForModal.title;
+    document.getElementById("licenseOptions").innerHTML = licenses.map(l => `
+      <div class="license-card" data-lid="${l.id}" onclick="selectLicense('${l.id}')">
+        <div class="license-name">${l.name}</div>
+        <div class="license-price">${l.price}</div>
+        <ul class="license-features">
+          ${l.features.map(f => `<li>${f}</li>`).join("")}
+        </ul>
+      </div>
+    `).join("");
+    document.getElementById("modalStep1").style.display = "block";
+    document.getElementById("modalStep2").style.display = "none";
+    document.getElementById("modalOverlay").classList.add("open");
+  }
+
+  function selectLicense(lid) {
+    selectedLicense = lid;
+    document.querySelectorAll(".license-card").forEach(c => {
+      c.classList.toggle("selected", c.dataset.lid === lid);
+    });
+  }
+
+  document.getElementById("addToCartBtn").addEventListener("click", () => {
+    if (!selectedLicense) { alert("Please select a license to continue."); return; }
+    const lic = licenses.find(l => l.id === selectedLicense);
+    cart.push({ beat: currentBeatForModal, license: lic });
+    updateCartCount();
+    document.getElementById("cartConfirmDetail").innerHTML =
+      `<strong style="color:var(--text)">${currentBeatForModal.title}</strong><br>${lic.name} &nbsp;·&nbsp; ${lic.price}`;
+    document.getElementById("modalStep1").style.display = "none";
+    document.getElementById("modalStep2").style.display = "block";
+  });
+
+  document.getElementById("keepShoppingBtn").addEventListener("click", closeModal);
+
+  document.getElementById("modalClose").addEventListener("click", closeModal);
+  document.getElementById("modalOverlay").addEventListener("click", e => {
+    if (e.target === document.getElementById("modalOverlay")) closeModal();
+  });
+
+  function closeModal() {
+    document.getElementById("modalOverlay").classList.remove("open");
+  }
+
+  document.getElementById("checkoutBtn").addEventListener("click", () => {
+    closeModal();
+    openCartDrawer();
+  });
+
+
+  // ── CART ──
+  function openCartDrawer() {
+    renderCartDrawer();
+    document.getElementById("cartDrawerOverlay").classList.add("open");
+  }
+
+  function closeCartDrawer() {
+    document.getElementById("cartDrawerOverlay").classList.remove("open");
+  }
+
+  document.getElementById("cartDrawerOverlay").addEventListener("click", e => {
+    if (e.target === document.getElementById("cartDrawerOverlay")) closeCartDrawer();
+  });
+
+  function updateCheckoutBtn() {
+    const checked = document.getElementById("deliveryAckCheck").checked;
+    const btn = document.getElementById("checkoutActionBtn");
+    if (btn) {
+      btn.disabled = !checked;
+      btn.style.opacity = checked ? "1" : "0.45";
+      btn.style.cursor = checked ? "pointer" : "not-allowed";
+    }
+    const label = document.getElementById("deliveryAckLabel");
+    if (label) label.style.borderColor = checked ? "var(--accent)" : "var(--border)";
+  }
+
+  function renderCartDrawer() {
+    const container = document.getElementById("cartItems");
+    const footer = document.getElementById("cartFooter");
+    if (cart.length === 0) {
+      container.innerHTML = '<div class="cart-empty">Your cart is empty.<br>Add a beat to get started.</div>';
+      footer.style.display = "none";
+      return;
+    }
+    container.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <div class="cart-item-title">${item.beat.title}</div>
+          <div class="cart-item-license">${item.license.name}</div>
+        </div>
+        <div class="cart-item-price">${item.license.price}</div>
+        <button class="cart-item-remove" onclick="removeFromCart(${i})" title="Remove">✕</button>
+      </div>
+    `).join("");
+    const total = cart.reduce((sum, item) => sum + parseInt(item.license.price.replace("$","")), 0);
+    document.getElementById("cartTotal").textContent = "$" + total;
+    footer.style.display = "block";
+    // Reset acknowledgment checkbox on each render
+    const ack = document.getElementById("deliveryAckCheck");
+    if (ack) { ack.checked = false; updateCheckoutBtn(); }
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartCount();
+    renderCartDrawer();
+  }
+
+  function updateCartCount() {
+    const badge = document.getElementById("cartCount");
+    if (cart.length === 0) { badge.style.display = "none"; }
+    else { badge.style.display = "flex"; badge.textContent = cart.length; }
+  }
+
+  // ─────────────────────────────────────────────────────────────────
+  // STRIPE PAYMENT LINKS — HOW TO SET UP:
+  //
+  // 1. Go to https://dashboard.stripe.com/payment-links and sign in.
+  // 2. Click "+ New" to create a Payment Link for each license tier.
+  //    Set the product name (e.g. "Basic Lease") and the price ($15, $30, etc.)
+  //    You can use ONE link per license type — it works for any beat.
+  // 3. Copy the generated URL (e.g. https://buy.stripe.com/xxxx) for each tier.
+  // 4. Paste them into the object below, replacing the placeholder strings.
+  // 5. That's it — no backend, no server, fully secure.
+  //
+  // TIP: In your Stripe Payment Link settings, enable "Collect customer info"
+  //      so buyers can enter their name/email for the license delivery.
+  // ─────────────────────────────────────────────────────────────────
+  const STRIPE_LINKS = {
+    basic:     "https://buy.stripe.com/6oUcN7ctLdGj9X1eOF4AU00", // $15 Basic Lease
+    premium:   "https://buy.stripe.com/00w4gBalD1XB5GL6i94AU03", // $30 Premium Lease
+    unlimited: "https://buy.stripe.com/4gMdRbctL6dR1qv6i94AU01", // $60 Unlimited Lease
+    exclusive: "https://buy.stripe.com/7sYeVf9hz1XB9X121T4AU02", // $100 Exclusive Rights
+  };
+
+  function cartCheckout() {
+    if (cart.length === 0) return;
+
+    // If the cart has multiple items, open a Stripe link for each one.
+    // Stripe doesn't support multi-item mixed carts via Payment Links,
+    // so each beat/license combo opens its own tab.
+    // (For a true multi-item cart, upgrade to Stripe Checkout with a backend.)
+    if (cart.length === 1) {
+      const item = cart[0];
+      const link = STRIPE_LINKS[item.license.id];
+      if (!link || link.includes("YOUR_")) {
+        alert("Almost there! Paste your Stripe Payment Link URLs into the STRIPE_LINKS config at the top of the <script> block.");
+        return;
+      }
+      // Pass beat title as prefill metadata via URL param (Stripe ignores unknown params safely)
+      const url = link + "?prefilled_email=&client_reference_id=" + encodeURIComponent(item.beat.title + " — " + item.license.name);
+      closeCartDrawer();
+      window.open(url, "_blank");
+    } else {
+      // Multi-item: confirm then open each in sequence
+      const names = cart.map(i => `• ${i.beat.title} — ${i.license.name} (${i.license.price})`).join("\n");
+      const go = confirm("You have " + cart.length + " items. Each will open in its own Stripe checkout tab:\n\n" + names + "\n\nProceed?");
+      if (!go) return;
+
+      const hasPlaceholder = cart.some(i => {
+        const link = STRIPE_LINKS[i.license.id];
+        return !link || link.includes("YOUR_");
+      });
+      if (hasPlaceholder) {
+        alert("Almost there! Paste your Stripe Payment Link URLs into the STRIPE_LINKS config at the top of the <script> block.");
+        return;
+      }
+
+      closeCartDrawer();
+      cart.forEach(item => {
+        const link = STRIPE_LINKS[item.license.id];
+        const url = link + "?client_reference_id=" + encodeURIComponent(item.beat.title + " — " + item.license.name);
+        window.open(url, "_blank");
+      });
+    }
+
+    // Clear cart after initiating checkout
+    cart = [];
+    updateCartCount();
+  }
+
+
+  // ── CONTACT MODAL ──
+  function copyEmail() {
+    navigator.clipboard.writeText("m4patron10500@gmail.com").then(() => {
+      const btn = document.getElementById("copyEmailBtn");
+      btn.textContent = "Copied!";
+      setTimeout(() => { btn.textContent = "Copy"; }, 2000);
+    });
+  }
+
+  function openContactModal() {
+    document.getElementById("contactModalOverlay").classList.add("open");
+  }
+  function closeContactModal() {
+    document.getElementById("contactModalOverlay").classList.remove("open");
+  }
+  document.addEventListener("click", e => {
+    if (e.target === document.getElementById("contactModalOverlay")) closeContactModal();
+  });
+
+  // ── YOUTUBE PREVIEW ──
+  function openYTPreview(videoId, title) {
+    document.getElementById('ytModalTitle').textContent = title;
+    document.getElementById('ytFrame').src =
+      'https://www.youtube.com/embed/' + videoId + '?rel=0&modestbranding=1&autoplay=1';
+    document.getElementById('ytModalOverlay').classList.add('open');
+  }
+  function closeYTPreview(e) {
+    if (e && e.target !== document.getElementById('ytModalOverlay')) return;
+    document.getElementById('ytModalOverlay').classList.remove('open');
+    document.getElementById('ytFrame').src = '';
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeYTPreview();
+  });
+
+  // ── PAGINATION ──
+  function goPrevPage() {
+    if (currentPage > 0) { currentPage--; renderGrid(activeFilter); window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+  function goNextPage() {
+    const list = activeFilter === "all" ? beats : beats.filter(b => b.genre === activeFilter);
+    const totalPages = Math.ceil(list.length / PAGE_SIZE);
+    if (currentPage < totalPages - 1) { currentPage++; renderGrid(activeFilter); window.scrollTo({top:0,behavior:'smooth'}); }
+  }
+
+  // ── INIT ──
+  renderGrid("all");
+</script>
+</body>
+</html>

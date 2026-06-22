@@ -897,18 +897,20 @@
 <section class="hero" id="beats">
   <div class="hero-brand">M4<span>Patron</span></div>
   <p class="hero-eyebrow">Producer · Beatmaker · Composer</p>
-  <h1>Beats built for art.</h1>
-  <p>Premium instrumentals ready to license. Preview every track right here and find your sound.</p>
+  <p style="font-size:12px; color:var(--muted); letter-spacing:0.06em; margin-bottom:18px;">Trusted by artists worldwide</p>
+  <h1>Your next hit starts here.</h1>
+  <p>Premium instrumentals ready to license. Preview every track and find your sound — licenses from $15.</p>
+  <a href="#beatGrid" style="display:inline-block; margin-top:28px; background:var(--accent); color:var(--bg); font-family:var(--font-disp); font-size:13px; font-weight:700; letter-spacing:0.06em; padding:14px 32px; border-radius:3px; text-decoration:none; transition:opacity .18s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Browse Beats →</a>
 </section>
 
 <!-- FILTER BAR -->
 <div class="filter-bar" id="filterBar">
   <span>Filter:</span>
-  <button class="filter-btn active" data-genre="all">All</button>
-  <button class="filter-btn" data-genre="Trap">Trap</button>
-  <button class="filter-btn" data-genre="Melodic Trap">Melodic Trap</button>
-  <button class="filter-btn" data-genre="Drill">Drill</button>
-  <button class="filter-btn" data-genre="Underground">Underground</button>
+  <button class="filter-btn active" data-genre="all">All (16)</button>
+  <button class="filter-btn" data-genre="Trap">Trap (3)</button>
+  <button class="filter-btn" data-genre="Melodic Trap">Melodic Trap (10)</button>
+  <button class="filter-btn" data-genre="Drill">Drill (1)</button>
+  <button class="filter-btn" data-genre="Underground">Underground (1)</button>
 </div>
 
 <!-- BEAT GRID -->
@@ -925,6 +927,7 @@
 <section class="pricing-section" id="pricing">
   <p class="section-label">License tiers</p>
   <h2>Simple pricing.<br>Every beat.</h2>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:32px;margin-top:-24px;">Every beat. Every license. Instant access.</p>
   <div class="pricing-grid">
     <div class="pricing-card">
       <div class="tier">Basic Lease</div>
@@ -937,8 +940,11 @@
         <li>Must credit M4Patron</li>
       </ul>
     </div>
-    <div class="pricing-card">
-      <div class="tier">Premium Lease</div>
+    <div class="pricing-card featured">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="tier" style="margin-bottom:0;">Premium Lease</div>
+        <span style="font-family:var(--font-disp);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;background:var(--accent);color:var(--bg);padding:3px 8px;border-radius:2px;font-weight:700;">Most Popular</span>
+      </div>
       <div class="amount">$30</div>
       <ul>
         <li>MP3 + WAV files</li>
@@ -972,6 +978,11 @@
     </div>
   </div>
 </section>
+
+<!-- TRUST LINE -->
+<div style="padding: 24px 40px; text-align:center; border-top: 1px solid var(--border);">
+  <p style="font-size:12px; color:var(--muted); letter-spacing:0.06em;">All beats produced exclusively by M4Patron &nbsp;·&nbsp; Licensed to artists worldwide</p>
+</div>
 
 <!-- FOOTER -->
 <div style="padding: 20px 40px; border-top: 1px solid var(--border); text-align:center;">
@@ -1178,7 +1189,10 @@
         </div>
         <div class="beat-actions">
           <span class="beat-time">${b.duration}</span>
-          <button class="buy-btn" onclick="openModal(${b.id})" title="Add to Cart"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:currentColor;vertical-align:middle;margin-right:5px"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.9 18 9 18h12v-2H9.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.43 5H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>Add to Cart</button>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <button class="buy-btn" onclick="openModal(${b.id})" title="License This Beat"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:currentColor;vertical-align:middle;margin-right:5px"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96C5 16.1 6.9 18 9 18h12v-2H9.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63H19c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 23.43 5H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>License This Beat</button>
+            <span style="font-size:10px;color:var(--muted);letter-spacing:0.04em;">from $15</span>
+          </div>
         </div>
       </div>`;
   }
